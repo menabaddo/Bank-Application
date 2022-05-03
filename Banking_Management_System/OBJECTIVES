@@ -1,0 +1,26 @@
+name of bank - LEXOCORP
+
+OBJECTIVE
+-Being able to manage financial transactions and offer good services to customers
+- The application should be fast and secure
+- It should be optimized and also scalable
+- 
+- Transaction records should be recorded on the admin side
+- 
+
+
+
+USER
+Users should be able to withdraw and deposit money.
+Users should be able to transfer money within each other
+Users should be able to Sign up for an account and should be able to close their account.
+Users should be able to see their transaction history
+
+ADMIN
+The admin should be able to see all transaction records
+The admin should be able to freeze their account
+The admin should be able to log in and log out
+The admin can not see password of users.
+The admin should also have a developer option.
+
+

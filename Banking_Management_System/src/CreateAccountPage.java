@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Random;
 
-import javax.swing.BorderFactory;     
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -133,7 +133,7 @@ public class CreateAccountPage extends JFrame {
 
 		dob = new JDateChooser();
 
-		dob.setDateFormatString("yyyy-mm-dd");
+		dob.setDateFormatString("yyyy-MM-dd");
 
 
 
@@ -154,12 +154,13 @@ public class CreateAccountPage extends JFrame {
 
 		TitledBorder blackline = BorderFactory.createTitledBorder("New Account");
 		blackline.setTitleColor(Color.RED);
-		blackline.setTitleFont(new Font("Tahoma", Font.BOLD, 24));
+		blackline.setTitleFont(new Font("verdana", Font.BOLD, 20));
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 		frame.setLayout(null);
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.setSize(1200, 800); // size of frame
+		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.add(label14);
 		label14.setBounds(400, 720, 400, 40);
@@ -281,7 +282,7 @@ public class CreateAccountPage extends JFrame {
 //
 //		String date = sdf.format(dob.getDate());
 		
-		
+		// CREATE BUTTON
 		buttonOne.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -311,6 +312,9 @@ public class CreateAccountPage extends JFrame {
 					pst.execute();
 					JOptionPane.showMessageDialog(null, "Congrats\n Account has been created");
 					Bal();
+					frame.setVisible(false);
+					Authentication obj = new Authentication(); // Then Makes the Authentication Page visible
+					obj.setVisible(true);
 				}catch(Exception e) {
 					JOptionPane.showMessageDialog(null, e);
 				}

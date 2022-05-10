@@ -35,29 +35,38 @@ public class Loading extends JFrame implements Runnable {
 	Loading() {
 		th = new Thread(this);
 		conn = javaConnect.ConnecrDb();
-		frame = new JFrame("LEXOCORP - Progress");
+		frame = new JFrame("Authenticating");
 		panel = new JPanel();
 
 		frame.setLayout(null);
-		frame.setVisible(true);
+
+//		frame.setBackground(Color.white);
+
+		frame.getContentPane().setBackground(Color.white);
 		frame.setResizable(false);
 		frame.setSize(450, 660); // size of frame
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.dispose();
+		frame.setUndecorated(true);
+//		frame.pack();
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 
 		panel.setLayout(null);
-//		panel.setBackground(Color.yellow);
+		panel.setBackground(Color.white);
 		panel.setBounds(20, 40, 400, 500);
 
 		icon = new ImageIcon("C:/Users/mmm/eclipse-workspace/Banking_Management_System/src/IMG/LEXOCORP_LOGO.png"); // LEXOCORP
 		imageLabel = new JLabel(icon); // added LEXOCORP LOGO TO ICON
 
-		icon2 = new ImageIcon("C:/Users/mmm/eclipse-workspace/Banking_Management_System/src/IMG/Loader.png"); // LEXOCORP
+		icon2 = new ImageIcon("C:/Users/mmm/eclipse-workspace/Banking_Management_System/src/IMG/loading.gif"); // LEXOCORP
 		imageLabel2 = new JLabel(icon2); // added LEXOCORP LOGO TO ICON
 
 		imageLabel.setBounds(55, -80, 300, 300); // LEXOCORP
 
 
-		TitledBorder blackline = BorderFactory.createTitledBorder("My Page");
+		TitledBorder blackline = BorderFactory.createTitledBorder("Authenticating");
 		blackline.setTitleColor(Color.RED);
 		blackline.setTitleFont(new Font("Tahoma", Font.BOLD, 24));
 
@@ -66,7 +75,10 @@ public class Loading extends JFrame implements Runnable {
 		bar = new JProgressBar(0, 100);
 		bar.setBounds(45, 150, 320, 50);
 		bar.setStringPainted(true);
+
 		bar.setForeground(Color.red);
+		bar.setBackground(Color.white);
+		bar.setFont(new Font("Tahoma", Font.BOLD, 20));
 
 		label1 = new JLabel("Redirecting..."); // redirecting label.
 		label1.setBounds(170, 205, 100, 20);

@@ -3,6 +3,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,7 +29,7 @@ import javax.swing.event.PopupMenuListener;
 
 import net.proteanit.sql.DbUtils;
 
-public class Mypage extends JFrame {
+public class Mypage extends JFrame implements Runnable {
 	java.sql.Connection conn;
 
 	ResultSet rs;
@@ -99,13 +101,27 @@ public class Mypage extends JFrame {
 	JLabel label28;
 	JLabel label29;
 
+	JLabel label30;
+	JLabel label31;
+	JLabel label32; // view balance panel
+	JLabel label33;
+	JLabel label34;
+	JLabel label35;
+	JLabel label36;
+	JLabel label37;
+
+	JLabel label38; // change pin panel
+	JLabel label39;
+
+	JLabel label40; // security answer
+
 	JTextField textField1; // User
 	JTextField textField2; // Date
 
 	JTextField textField3;
 	JTextField textField4;
-	JTextField textField5; // profile panel left side
-	JTextField textField6;
+//	JTextField textField5; // profile panel left side
+//	JTextField textField6;
 	JTextField textField7;
 
 	JTextField textField8;
@@ -137,9 +153,26 @@ public class Mypage extends JFrame {
 	JTextField textField31;
 	JTextField textField32;
 
-	JComboBox creditAccount;
+	JTextField textField33;
+	JTextField textField34;
+	JTextField textField35; // view balance panel
+	JTextField textField36;
+	JTextField textField37;
+	JTextField textField38;
+	JTextField textField39;
+	JTextField textField40;
 
-//	String creditAcc[] = { "" };
+	JTextField textField41; // change pin panel
+	JTextField textField42;
+
+	JComboBox creditAccount;
+	JComboBox<String> Nationality;
+	JComboBox<String> Gender;
+	JComboBox<String> securityQuestion;
+
+	String Nationale[] = {};
+	String Gendere[] = {};
+	String securityQuestione[] = {};
 
 	JButton buttonOne;
 	JButton buttonTwo;
@@ -154,6 +187,10 @@ public class Mypage extends JFrame {
 	JButton buttonEleven;
 	JButton buttonTwelve;
 	JButton buttonThirteen;
+	JButton buttonFourteen;
+	JButton buttonFifteen;
+	JButton buttonSixteen;
+	JButton buttonSeventeen;
 
 	JTable table; // customer list table
 	JScrollPane jscroll;
@@ -161,10 +198,13 @@ public class Mypage extends JFrame {
 	JTable table2; // Transaction table
 	JScrollPane jscroll2;
 
+	Thread th2;
+	Thread th3;
+
+	int change = 0;
 
 
-	Mypage(){
-
+	Mypage() {
 
 
 		conn = javaConnect.ConnecrDb();
@@ -185,6 +225,7 @@ public class Mypage extends JFrame {
 		label3 = new JLabel("Name");
 		label4 = new JLabel("Date of Birth"); // profile left side
 		label5 = new JLabel("Nationality");
+
 		label6 = new JLabel("Gender");
 		label7 = new JLabel("Address");
 
@@ -220,20 +261,39 @@ public class Mypage extends JFrame {
 		label28 = new JLabel("Amount");
 		label29 = new JLabel("Total");
 
+		// ------------------------------WITHDRAW
+		// LABEL-------------------------------------------------------------------------------------------------
+		label30 = new JLabel("User");
+		label31 = new JLabel("Name"); // profile right side
+		label32 = new JLabel("Account No.");
+		label33 = new JLabel("MICR No.");
+		label34 = new JLabel("Rate of Interest");
+		label35 = new JLabel("Available balance");
+		label36 = new JLabel("Mod Balance");
+		label37 = new JLabel("Nomination Registered");
+
+		label38 = new JLabel("Enter Old Pin");
+		label39 = new JLabel("Enter New Pin");
+
+		label40 = new JLabel("Answer");
+
 		textField1 = new JTextField(16);
 		textField2 = new JTextField(16);
 
 		textField3 = new JTextField(16);
 		textField4 = new JTextField(16); // textField left side profile panel
-		textField5 = new JTextField(16);
-		textField6 = new JTextField(16);
+//		textField5 = new JTextField(16);
+		Nationality = new JComboBox<>(Nationale);
+//		textField6 = new JTextField(16);
+		Gender = new JComboBox<>(Gendere);
 		textField7 = new JTextField(16);
 
 		textField8 = new JTextField(16);
 		textField9 = new JTextField(16);
 		textField10 = new JTextField(16); // textField right side profile panel
 		textField11 = new JTextField(16);
-		textField12 = new JTextField(16);
+		textField12 = new JTextField(16); // Answer
+		securityQuestion = new JComboBox<>(securityQuestione);
 
 		hideIcon = new ImageIcon("C:/Users/mmm/eclipse-workspace/Banking_Management_System/src/IMG/hideIcon.png");
 		editIcon = new ImageIcon("C:/Users/mmm/eclipse-workspace/Banking_Management_System/src/IMG/editIcon.png");
@@ -256,6 +316,10 @@ public class Mypage extends JFrame {
 		buttonEleven = new JButton("Search", searchIcon);
 		buttonTwelve = new JButton("Show", checkIcon);
 		buttonThirteen = new JButton("Withdraw", withdrawIcon);
+		buttonFourteen = new JButton("Search", searchIcon);
+		buttonFifteen = new JButton("Change");
+		buttonSixteen = new JButton("Clear");
+		buttonSeventeen = new JButton("Logout");
 
 		tabbedPane = new JTabbedPane();
 		tabbedPane.setBounds(20, 130, 950, 500);
@@ -269,7 +333,7 @@ public class Mypage extends JFrame {
 
 		textField19 = new JTextField(16);
 		textField20 = new JTextField(16);
-		textField21 = new JTextField(16); // textField Deposit Panel
+		textField21 = new JTextField(16); // textField Transfer Panel
 		textField22 = new JTextField(16);
 		textField23 = new JTextField(16);
 		textField24 = new JTextField(16);
@@ -281,11 +345,25 @@ public class Mypage extends JFrame {
 		textField27 = new JTextField(16); // textField Withdraw Panel
 		textField28 = new JTextField(16);
 		textField29 = new JTextField(16);
+
 		textField30 = new JTextField(16);
 		textField31 = new JTextField(16);
 		textField32 = new JTextField(16);
 
-		
+		textField33 = new JTextField(16); // textField view balance Panel
+		textField34 = new JTextField(16);
+		textField35 = new JTextField(16);
+		textField36 = new JTextField(16);
+		textField37 = new JTextField(16);
+		textField38 = new JTextField(16);
+		textField39 = new JTextField(16);
+		textField40 = new JTextField(16);
+
+		textField41 = new JTextField(16); // textField change pin Panel
+		textField42 = new JTextField(16);
+
+		th2 = new Thread(this);
+		th3 = new Thread(this);
 
 		// PROFILE
 		// PANEL-----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -308,18 +386,19 @@ public class Mypage extends JFrame {
 		textField4.setEditable(false);
 
 		panel1.add(label5);
-		panel1.add(textField5);
+//		panel1.add(textField5);
+		panel1.add(Nationality);
 		label5.setBounds(30, 190, 100, 50); // NATIONALITY
 		label5.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		textField5.setBounds(130, 200, 250, 30);
-		textField5.setEditable(false);
+		Nationality.setBounds(130, 200, 250, 30);
+		Nationality.setEnabled(false);
 
 		panel1.add(label6);
-		panel1.add(textField6);
+		panel1.add(Gender);
 		label6.setBounds(30, 260, 100, 50); // GENDER
 		label6.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		textField6.setBounds(130, 270, 250, 30);
-		textField6.setEditable(false);
+		Gender.setBounds(130, 270, 250, 30);
+		Gender.setEnabled(false);
 
 		panel1.add(label7);
 		panel1.add(textField7);
@@ -359,17 +438,19 @@ public class Mypage extends JFrame {
 		textField11.setEditable(false);
 
 		panel1.add(label12);
-		panel1.add(textField12);
+		panel1.add(securityQuestion);
 		label12.setBounds(470, 330, 200, 50); // SECURITY QUESTION
 		label12.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		textField12.setBounds(600, 340, 250, 30);
-		textField12.setEditable(false);
+		securityQuestion.setBounds(600, 340, 250, 30);
+		securityQuestion.setEnabled(false);
 
 		panel1.add(buttonTwo);
 		buttonTwo.setBounds(600, 400, 115, 40);
+		buttonTwo.setEnabled(false);
 
 		panel1.add(buttonThree);
 		buttonThree.setBounds(735, 400, 115, 40);
+		buttonThree.setEnabled(false);
 
 		// ---------------------------------------------------DEPOSIT
 		// PANEL------------------------------------------------------------------------------
@@ -380,7 +461,7 @@ public class Mypage extends JFrame {
 		panel2.add(label13);
 		panel2.add(textField13);
 		label13.setBounds(200, 40, 200, 50);
-		label13.setFont(new Font("Tahoma", Font.PLAIN, 16)); // User
+		label13.setFont(new Font("Tahoma", Font.PLAIN, 14)); // User
 		textField13.setBounds(350, 50, 300, 30);
 
 		panel2.add(buttonFour);
@@ -389,21 +470,21 @@ public class Mypage extends JFrame {
 		panel2.add(label14);
 		panel2.add(textField14);
 		label14.setBounds(200, 120, 200, 50);
-		label14.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Name
+		label14.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Name
 		textField14.setBounds(350, 130, 300, 30);
 		textField14.setEditable(false);
 
 		panel2.add(label15);
 		panel2.add(textField15);
 		label15.setBounds(200, 180, 200, 50);
-		label15.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Account No.
+		label15.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Account No.
 		textField15.setBounds(350, 190, 300, 30);
 		textField15.setEditable(false);
 
 		panel2.add(label16);
 		panel2.add(textField16);
 		label16.setBounds(200, 240, 200, 50);
-		label16.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Available balance
+		label16.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Available balance
 		textField16.setBounds(350, 250, 300, 30);
 		textField16.setEditable(false);
 
@@ -412,7 +493,7 @@ public class Mypage extends JFrame {
 		panel2.add(textField18);
 		panel2.add(buttonFive);
 		label17.setBounds(200, 300, 200, 50);
-		label17.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Deposit Amount
+		label17.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Deposit Amount
 		textField17.setBounds(350, 310, 145, 30);
 		textField17.setEditable(true);
 		textField18.setBounds(500, 310, 150, 30);
@@ -434,7 +515,7 @@ public class Mypage extends JFrame {
 		panel3.add(label18);
 		panel3.add(textField19);
 		label18.setBounds(200, 40, 200, 50);
-		label18.setFont(new Font("Tahoma", Font.PLAIN, 16)); // User
+		label18.setFont(new Font("Tahoma", Font.PLAIN, 14)); // User
 		textField19.setBounds(350, 50, 300, 30);
 
 		panel3.add(buttonSeven);
@@ -443,21 +524,21 @@ public class Mypage extends JFrame {
 		panel3.add(label19);
 		panel3.add(textField20);
 		label19.setBounds(200, 120, 200, 50);
-		label19.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Name
+		label19.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Name
 		textField20.setBounds(350, 130, 300, 30);
 		textField20.setEditable(false);
 
 		panel3.add(label20);
 		panel3.add(textField21);
 		label20.setBounds(200, 180, 200, 50);
-		label20.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Account No.
+		label20.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Account No.
 		textField21.setBounds(350, 190, 300, 30);
 		textField21.setEditable(false);
 		
 		panel3.add(label21);
 		panel3.add(textField22);
 		label21.setBounds(200, 240, 200, 50);
-		label21.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Available balance
+		label21.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Available balance
 		textField22.setBounds(350, 250, 300, 30);
 		textField22.setEditable(false);
 		
@@ -466,7 +547,7 @@ public class Mypage extends JFrame {
 		panel3.add(textField24);
 		panel3.add(buttonEight);
 		label22.setBounds(200, 300, 200, 50);
-		label22.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Transfer Amount
+		label22.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Transfer Amount
 		textField23.setBounds(350, 310, 145, 30);
 		textField23.setEditable(true);
 		textField24.setBounds(500, 310, 150, 30);
@@ -478,9 +559,10 @@ public class Mypage extends JFrame {
 		panel3.add(buttonTen); // credit account
 		panel3.add(creditAccount);
 		panel3.add(textField25);
+		textField25.setEditable(false);
 		panel3.add(textField26);
 		label23.setBounds(200, 360, 200, 50);
-		label23.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label23.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		creditAccount.setBounds(350, 370, 300, 30);
 		textField25.setBounds(670, 370, 100, 30);
 		textField26.setBounds(780, 370, 100, 30);
@@ -498,7 +580,7 @@ public class Mypage extends JFrame {
 		panel4.add(label24);
 		panel4.add(textField27);
 		label24.setBounds(200, 40, 200, 50);
-		label24.setFont(new Font("Tahoma", Font.PLAIN, 16)); // User
+		label24.setFont(new Font("Tahoma", Font.PLAIN, 14)); // User
 		textField27.setBounds(350, 50, 300, 30);
 		panel4.add(buttonEleven);
 		buttonEleven.setBounds(670, 50, 100, 30);
@@ -506,28 +588,28 @@ public class Mypage extends JFrame {
 		panel4.add(label25);
 		panel4.add(textField28);
 		label25.setBounds(200, 120, 200, 50);
-		label25.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Name
+		label25.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Name
 		textField28.setBounds(350, 130, 300, 30);
 		textField28.setEditable(false);
 
 		panel4.add(label26);
 		panel4.add(textField29);
 		label26.setBounds(200, 180, 200, 50);
-		label26.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Account No.
+		label26.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Account No.
 		textField29.setBounds(350, 190, 300, 30);
 		textField29.setEditable(false);
 
 		panel4.add(label27);
 		panel4.add(textField30);
 		label27.setBounds(200, 240, 200, 50);
-		label27.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Available balance
+		label27.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Available balance
 		textField30.setBounds(350, 250, 300, 30);
 		textField30.setEditable(false);
 
 		panel4.add(label28);
 		panel4.add(textField31);
 		label28.setBounds(200, 300, 200, 50);
-		label28.setFont(new Font("Tahoma", Font.PLAIN, 16)); // Amount
+		label28.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Amount
 		textField31.setBounds(350, 310, 300, 30);
 
 		panel4.add(label29);
@@ -535,7 +617,7 @@ public class Mypage extends JFrame {
 		panel4.add(buttonThirteen); // Total
 		panel4.add(textField32);
 		label29.setBounds(200, 360, 200, 50);
-		label29.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		label29.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		textField32.setBounds(350, 370, 300, 30);
 		buttonTwelve.setBounds(670, 370, 100, 30);
 		buttonThirteen.setBounds(450, 430, 130, 30);
@@ -555,7 +637,7 @@ public class Mypage extends JFrame {
 		panel5.setBorder(blackline);
 		jscroll.setBounds(20, 30, 900, 400);
 		
-		// -----------------------CUSTOMER LIST
+		// -----------------------TRANSACTION LIST
 		// PANEL-------------------------------------------------------------------------------------------------
 		panel6 = new JPanel();
 		table2 = new JTable();
@@ -568,8 +650,92 @@ public class Mypage extends JFrame {
 		panel6.setBorder(blackline2);
 		jscroll2.setBounds(20, 30, 900, 400);
 
+		// -----------------------VIEW BALANCE
+		// PANEL-------------------------------------------------------------------------------------------------
 		panel7 = new JPanel();
+		panel7.setLayout(null);
+
+		panel7.add(label30);
+		panel7.add(textField33);
+		textField33.setEditable(true);
+		panel7.add(buttonFourteen);
+		buttonFourteen.setBounds(670, 50, 100, 30);
+		label30.setBounds(170, 40, 200, 50);
+		label30.setFont(new Font("Tahoma", Font.PLAIN, 14)); // User
+		textField33.setBounds(350, 50, 300, 30);
+
+		panel7.add(label31);
+		panel7.add(textField34);
+		textField34.setEditable(false);
+		label31.setBounds(170, 90, 200, 50);
+		label31.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Name
+		textField34.setBounds(350, 100, 300, 30);
+
+		panel7.add(label32);
+		panel7.add(textField35);
+		textField35.setEditable(false);
+		label32.setBounds(170, 140, 200, 50);
+		label32.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Account No.
+		textField35.setBounds(350, 150, 300, 30);
+
+		panel7.add(label33);
+		panel7.add(textField36);
+		textField36.setEditable(false);
+		label33.setBounds(170, 190, 200, 50);
+		label33.setFont(new Font("Tahoma", Font.PLAIN, 14)); // MICR No.
+		textField36.setBounds(350, 200, 300, 30);
+
+		panel7.add(label34);
+		panel7.add(textField37);
+		textField37.setEditable(false);
+		label34.setBounds(170, 240, 200, 50);
+		label34.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Rate of Interest (%)
+		textField37.setBounds(350, 250, 300, 30);
+
+		panel7.add(label35);
+		panel7.add(textField38);
+		textField38.setEditable(false);
+		label35.setBounds(170, 290, 200, 50);
+		label35.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Available balance (%)
+		textField38.setBounds(350, 300, 300, 30);
+
+		panel7.add(label36);
+		panel7.add(textField39);
+		textField39.setEditable(false);
+		label36.setBounds(170, 340, 200, 50);
+		label36.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Mod Balance (%)
+		textField39.setBounds(350, 350, 300, 30);
+
+		panel7.add(label37);
+		panel7.add(textField40);
+		textField40.setEditable(false);
+		label37.setBounds(170, 390, 200, 50);
+		label37.setFont(new Font("Tahoma", Font.PLAIN, 14)); // Nomination Registered
+		textField40.setBounds(350, 400, 300, 30);
+
+
+		// -----------------------CHANGE PIN
+		// PANEL-------------------------------------------------------------------------------------------------
 		panel8 = new JPanel();
+		panel8.setLayout(null);
+		panel8.add(label38);
+		panel8.add(textField41);
+		label38.setBounds(170, 140, 200, 50);
+		label38.setFont(new Font("sans-serif", Font.PLAIN, 14)); // Enter Old Pin
+		textField41.setBounds(350, 150, 300, 30);
+
+		panel8.setLayout(null);
+		panel8.add(label39);
+		panel8.add(textField42);
+		label39.setBounds(170, 220, 200, 50);
+		label39.setFont(new Font("sans-serif", Font.PLAIN, 14)); // Enter New Pin
+		textField42.setBounds(350, 230, 300, 30);
+
+		panel8.add(buttonFifteen);
+		buttonFifteen.setBounds(350, 300, 100, 30);
+		panel8.add(buttonSixteen);
+		buttonSixteen.setBounds(550, 300, 100, 30);
+
 		panel9 = new JPanel();
 
 
@@ -589,6 +755,7 @@ public class Mypage extends JFrame {
 		frame.setLayout(null);
 		frame.setResizable(false);
 		frame.setVisible(true);
+		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.add(imageLabel);
@@ -597,6 +764,7 @@ public class Mypage extends JFrame {
 		frame.add(textField1);
 		frame.add(textField2);
 		frame.add(buttonOne);
+		frame.add(buttonSeventeen);
 		frame.add(tabbedPane);
 		
 		
@@ -607,6 +775,7 @@ public class Mypage extends JFrame {
 		textField1.setBounds(650, 30, 150, 30);
 		buttonOne.setBounds(810, 30, 50, 30);
 		textField2.setBounds(650, 80, 210, 30);
+		buttonSeventeen.setBounds(860, 80, 100, 30); // LOGOUT BUTTON
 		textField2.setEditable(false);
 
 		Calendar(); // calling the calendar method to get the current date
@@ -615,11 +784,10 @@ public class Mypage extends JFrame {
 
 
 
-
 		// PROFILE PANEL BUTTONS
 		// -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-		// --------------------------HIDE ICON
+		// --------------------------REVEAL ICON
 		// BUTTON----------------------------------------------------------------------------
 
 		// setting the textField to the value in the data base
@@ -627,6 +795,9 @@ public class Mypage extends JFrame {
 		buttonOne.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+
+				buttonTwo.setEnabled(true);
+
 
 				String sql = "select * from Account where Name=?"; // retrieve all the data of the name specified when
 																	// the eye button is clicked
@@ -649,13 +820,14 @@ public class Mypage extends JFrame {
 						textField9.setText(add4);
 
 						String add5 = rs.getString("Nationality");
-						textField5.setText(add5);
+						Nationality.getModel().setSelectedItem(add5);
 
 						String add6 = rs.getString("State");
 						textField10.setText(add6);
 
 						String add7 = rs.getString("Gender");
-						textField6.setText(add7);
+						Gender.getModel().setSelectedItem(add7);
+						;
 
 						String add8 = rs.getString("Mobile");
 						textField11.setText(add8);
@@ -664,7 +836,7 @@ public class Mypage extends JFrame {
 						textField7.setText(add9);
 
 						String add10 = rs.getString("Sec_Q");
-						textField12.setText(add10);
+						securityQuestion.getModel().setSelectedItem(add10);
 
 						rs.close();
 						pst.close();
@@ -697,38 +869,111 @@ public class Mypage extends JFrame {
 		// When clicked it set's some text field to become editable
 
 		buttonTwo.addActionListener(new ActionListener() {
+			// sets variable to false
+
+			boolean thatThingHappened = false;
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				textField5.setEditable(true);
-				textField6.setEditable(true);
+				buttonTwo.setEnabled(false);
+				buttonThree.setEnabled(true);
+
+				Nationality.setEnabled(true);
+				Gender.setEnabled(true);
 				textField7.setEditable(true); // allows you to edit some text field
 				textField10.setEditable(true);
 				textField11.setEditable(true);
-				textField12.setEditable(true);
+				securityQuestion.setEnabled(true);
 
+				if (!thatThingHappened && arg0.getSource() == buttonTwo) { // if false and button is clicked it calls
+																			// the method to populate the combobox
+
+					thatThingHappened = true;
+					populateC();
+				}
+
+				if (arg0.getSource() == buttonTwo) {
+					change = change + 1;
+
+				}
 			}
+
 		});
 
 
 		// SAVE BUTTON
 		buttonThree.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					String value1 = textField5.getText(); // Nationality
-					String value2 = textField6.getText(); // Gender
+					String value1 = Nationality.getSelectedItem().toString(); // Nationality
+					String value2 = Gender.getSelectedItem().toString(); // Gender
 					String value3 = textField7.getText(); // Address
 					String value4 = textField10.getText(); // State // whatever the user enters is stored in a variable
 					String value5 = textField11.getText(); // Mobile
-					String value6 = textField12.getText(); // Security Question
-					String value7 = textField1.getText(); // Security Question
-
+					String value6 = securityQuestion.getSelectedItem().toString(); // Security Question
+					String value7 = textField12.getText(); // Security Answer
+					String value8 = textField1.getText(); // Name
+					System.out.println(value6);
 					String sql = "update Account set Nationality='" + value1 + "', Gender='" + value2 + "', Address='"
-							+ value3 + "',State='" + value4 + "',Mobile='" + value5 + "',Sec_Q='" + value6
-							+ "' where Name='" + value7 + "'"; // those details are updated into the Account table
-					pst = conn.prepareStatement(sql);
-					pst.execute();
-					JOptionPane.showMessageDialog(null, "Profile Updated");
+							+ value3 + "',State='" + value4 + "',Mobile='" + value5 + "',Sec_Q='" + value6 + "',Sec_A='"
+							+ value7 + "' where Name='" + value8 + "'"; // those details are updated into the Account
+																		// table
+
+					System.out.println(value4.isBlank());
+					if (value3.isBlank() == false && value4.isBlank() == false && value5.isBlank() == false // checks to
+																											// see if
+																											// the
+																											// textField
+																											// is blank,
+																											// if it
+																											// returns
+																											// true then
+																											// it moves
+																											// to the
+																											// else
+																											// block
+							&& value7.isBlank() == false) {
+						pst = conn.prepareStatement(sql);
+						pst.execute();
+					
+
+
+					panel1.remove(label40);
+					panel1.remove(textField12);
+					int move = 420;
+						for (int i = 400; i <= 420; i++) { // removing textField12
+
+						buttonTwo.setBounds(600, move, 115, 40);
+						buttonThree.setBounds(735, move, 115, 40);
+
+						Thread.sleep(10);
+						move--;
+
+						}
+
+						JOptionPane.showMessageDialog(null, "Profile Updated");
+
+						// Enables or disables certain textField or buttons
+
+						Nationality.setEnabled(false);
+						Gender.setEnabled(false);
+						textField7.setEditable(false); // sets all editable field and combo box to false or true
+						textField10.setEditable(false);
+						textField11.setEditable(false);
+						securityQuestion.setEnabled(false);
+						buttonTwo.setEnabled(true);
+						buttonThree.setEnabled(false);
+
+						Gender.getModel().setSelectedItem(value2);
+						Nationality.getModel().setSelectedItem(value1);
+						securityQuestion.getModel().setSelectedItem(value6);
+					} else {
+						JOptionPane.showMessageDialog(null, "Please Fill in Empty Field");
+					}
+					
+
+
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e);
 				}
@@ -817,8 +1062,12 @@ public class Mypage extends JFrame {
 		buttonSix.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				int zeroChecker = Integer.parseInt(textField17.getText());
+
+				if (zeroChecker != 0 && zeroChecker >= 0) {
 				try {
 					String value1 = textField13.getText();
+
 					String value2 = textField18.getText();
 					String sql = "UPDATE balances set Balance='" + value2 + "'WHERE Name='" + value1 + "'";
 					pst = conn.prepareStatement(sql);
@@ -835,7 +1084,9 @@ public class Mypage extends JFrame {
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e);
 				}
-
+				} else {
+					JOptionPane.showMessageDialog(null, "Amount must be greater than zero");
+				}
 			}
 		});
 
@@ -893,6 +1144,7 @@ public class Mypage extends JFrame {
 		buttonEight.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				try {
 
 					int initialBalance = rs.getInt("Balance"); // getting the balance of the particular name specified
@@ -910,12 +1162,14 @@ public class Mypage extends JFrame {
 					JOptionPane.showMessageDialog(null, e); // if any other error, its going to display it
 
 				}
-			}
+				} 
+
 		});
 
 		// SHOW BUTTON
 
 		buttonNine.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -937,7 +1191,10 @@ public class Mypage extends JFrame {
 
 				}
 			}
+			
 		});
+		
+
 
 		// CREDIT ACCOUNT COMBO BOX
 
@@ -982,9 +1239,19 @@ public class Mypage extends JFrame {
 		buttonTen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				int zeroChecker = Integer.parseInt(textField23.getText());
+
+				if (zeroChecker != 0 && zeroChecker >= 0) {
 
 				TransferD();
 				TransferC();
+					textField23.setText("");
+					textField24.setText("");
+					textField25.setText("");
+					textField26.setText("");
+				}else {
+					JOptionPane.showMessageDialog(null, "Amount must be greater than zero");
+				}
 
 			}
 		});
@@ -1068,10 +1335,201 @@ public class Mypage extends JFrame {
 		buttonThirteen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				int zeroChecker = Integer.parseInt(textField31.getText());
+
+				if (zeroChecker != 0 && zeroChecker >= 0) {
 				withdrawD();
+					textField31.setText("");
+					textField32.setText("");
+
+				} else {
+					JOptionPane.showMessageDialog(null, "Amount must be greater than zero");
+					textField32.setText("");
+				}
 			}
 		});
 
+		// VIEW BALANCE BUTTON
+		// ---------------------------------------------------------------------------------------------------------------------------------
+		// SEARCH BUTTON
+		buttonFourteen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String sql = "SELECT * FROM Balances WHERE Name=?";
+				try {
+
+					pst = conn.prepareStatement(sql);
+					pst.setString(1, textField33.getText());
+					rs = pst.executeQuery();
+					if (rs.next()) {
+						String add1 = rs.getString("Name");
+						textField34.setText(add1);
+
+						String add2 = rs.getString("Acc");
+						textField35.setText(add2);
+
+						String add3 = rs.getString("MICR_No");
+						textField36.setText(add3);
+
+						String add4 = rs.getString("Balance");
+						textField38.setText(add4);
+
+						textField37.setText("4 %");
+
+						textField39.setText("Rs 0.00");
+
+						textField40.setText("No");
+
+					}
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e);
+				}
+			}
+		});
+
+		// ------------CHANGE PIN PANEL BUTTON
+		// ---------------------------------------------------------------------------------------------------------------------------------
+
+		buttonFifteen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				try {
+
+					String sql = "SELECT Pin FROM Account WHERE Name=?"; // getting the pin of the user from db
+					pst = conn.prepareStatement(sql);
+					pst.setString(1, textField1.getText()); // where name is textField1
+					rs = pst.executeQuery();
+
+					if (rs.next()) {
+						int oldPin = Integer.parseInt(textField41.getText()); // gets the actual old pin from db and the
+																				// old pin entered and sets it to the
+																				// variable
+						int actualOldPin = rs.getInt("Pin");
+
+
+						if (oldPin == actualOldPin) { // so if old pin from db is equal to old pin entered, it then lets
+							// user change pin to new pin and update the db
+							int value2 = Integer.parseInt(textField42.getText());
+							if (actualOldPin != value2) {
+
+								String valueFromText2 = textField42.getText();
+								String sql2 = "UPDATE Account SET Pin='" + valueFromText2 + "' WHERE Name=?";
+							pst = conn.prepareStatement(sql2);
+							pst.setString(1, textField1.getText());
+							pst.execute();
+					JOptionPane.showMessageDialog(null, "Pin Successfully Changed");
+							textField41.setText("");
+							textField42.setText("");
+							} else {
+								JOptionPane.showMessageDialog(null, "This Password is already in use");
+								textField42.setText("");
+
+							}
+
+						} else {
+						JOptionPane.showMessageDialog(null, "Incorrect Pin");
+							textField42.setText("");
+
+					}
+
+					}
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e);
+				} finally {
+
+					try {
+						pst.close();
+						rs.close();
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(null, e);
+					}
+
+				}
+
+			}
+		});
+
+		buttonSixteen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				textField41.setText("");
+				textField42.setText("");
+			}
+		});
+
+		// security Question
+
+		securityQuestion.addItemListener(new ItemListener() {
+			@Override
+
+			public void itemStateChanged(ItemEvent ie) {
+				try {
+
+					int add = ie.getStateChange();
+
+//					ItemSelectable add = ie.getItemSelectable();
+
+
+					if (add == 2 && change == 1) {
+						System.out.println(add + "add");
+
+						th2.start();
+
+					} else {
+
+						System.out.println(change + "change");
+
+						if (add == 2 && change >= 2) {
+							int move = 400;
+
+							try {
+								for (int i = 400; i <= 420; i++) { // For the loading Page
+									buttonTwo.setBounds(600, move, 115, 40);
+									buttonThree.setBounds(735, move, 115, 40);
+									panel1.add(label40);
+									panel1.add(textField12);
+									label40.setBounds(470, 370, 100, 50);
+									label40.setFont(new Font("Tahoma", Font.PLAIN, 14));
+									textField12.setBounds(600, 380, 250, 30);
+
+									move++;
+
+									Thread.sleep(10);
+
+								}
+
+							} catch (InterruptedException e) {
+
+							}
+
+						}
+					}
+
+//					th2.stop();
+
+
+
+
+
+
+
+				} catch (Exception e) {
+
+				}
+
+			}
+		});
+
+		buttonSeventeen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				frame.setVisible(false);
+				Authentication obj = new Authentication();
+				obj.setVisible(true);
+
+			}
+		});
 	}
 
 //---------------------------------------------------------- METHODS------------------------------------------------------------------------------------------------------
@@ -1165,7 +1623,7 @@ public class Mypage extends JFrame {
 		// in order to be able to populate a table from an external database we had to
 		// use a jar file " rs2xml "
 		try {
-			String sql = "SELECT Acc,Name,DOB,Acc_Type,Gender,Mobile FROM account";
+			String sql = "SELECT Acc,Name,DOB,Acc_Type,Gender,Mobile FROM Account";
 			pst = conn.prepareStatement(sql);
 			rs = pst.executeQuery();
 			table.setModel(DbUtils.resultSetToTableModel(rs));
@@ -1207,4 +1665,66 @@ public class Mypage extends JFrame {
 			}
 		}
 	}
+
+	// POPULATE THE COMBOBOX
+	public void populateC() {
+
+		Nationality.addItem("Nigeria");
+		Gender.addItem("Male");
+		Gender.addItem("Female");
+		securityQuestion.addItem("What is your nick name?");
+		securityQuestion.addItem("What is your mothers maiden name?");
+
+
 }
+
+@Override
+public void run() {
+	int move = 400;
+
+	try {
+		for (int i = 400; i <= 420; i++) { // For the loading Page
+		buttonTwo.setBounds(600, move, 115, 40);
+		buttonThree.setBounds(735, move, 115, 40);
+		panel1.add(label40);
+		panel1.add(textField12);
+		label40.setBounds(470, 370, 100, 50);
+		label40.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		textField12.setBounds(600, 380, 250, 30);
+
+		move++;
+
+		Thread.sleep(50);
+
+
+		}
+		
+
+	} catch (InterruptedException e) {
+
+		
+		}
+
+		System.out.println(th2.isInterrupted());
+
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
